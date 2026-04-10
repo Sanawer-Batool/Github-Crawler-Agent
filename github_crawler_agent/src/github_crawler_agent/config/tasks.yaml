@@ -1,0 +1,65 @@
+scrape_github_task:
+  description: >
+    Analyze the GitHub profile of the candidate below and gather as much 
+    relevant technical information as possible.
+
+    Candidate Username : {github_username}
+    Role Applied       : {role_applied}
+    Job Description    : {job_description}
+
+    Prefer using get_candidate_github_report first, because it gathers profile,
+    top repositories, language breakdown, and README highlights in a single call.
+    If needed, you may use other tools to fill any missing details.
+
+    Compile everything you find into a detailed technical summary of the candidate.
+  expected_output: >
+    A detailed technical profile of the candidate including:
+    - Their bio and general profile info
+    - List of top repositories with descriptions and star counts
+    - Languages and technologies they use across repos
+    - Key highlights from the top 3 READMEs
+    - Overall impression of their technical depth and activity
+  agent: github_scraper_agent
+
+evaluate_fit_task:
+  description: >
+    Using the GitHub analysis from the previous task, evaluate how well 
+    the candidate fits the job description below and produce a scorecard.
+
+    Role Applied    : {role_applied}
+    Job Description : {job_description}
+
+    Score the candidate on each dimension from 0 to 100 and provide 
+    a short reasoning for each score. Then give an overall score and 
+    a final recommendation.
+
+    Scoring dimensions:
+    - Technical Skill Match  (how well their stack matches the JD)
+    - Project Relevance      (how relevant their projects are to the role)
+    - Code Activity          (how active and consistent their GitHub is)
+    - Communication Quality  (clarity of READMEs and project documentation)
+
+    End with one of these verdicts:
+    STRONG FIT | MODERATE FIT | WEAK FIT
+  expected_output: >
+    A structured scorecard in this exact format:
+
+    Candidate GitHub  : <username>
+    Role Applied      : <role>
+
+    SCORECARD
+    ─────────────────────────────────────
+    Technical Skill Match  : XX/100 — <one line reasoning>
+    Project Relevance      : XX/100 — <one line reasoning>
+    Code Activity          : XX/100 — <one line reasoning>
+    Communication Quality  : XX/100 — <one line reasoning>
+    ─────────────────────────────────────
+    Overall Score          : XX/100
+
+    Verdict: STRONG FIT / MODERATE FIT / WEAK FIT
+
+    Summary:
+    <2-3 sentences explaining the verdict>
+  agent: summary_agent
+  context:
+    - scrape_github_task
